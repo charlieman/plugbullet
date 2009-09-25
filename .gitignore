@@ -1,0 +1,13 @@
+# .gitignore files to ignore
+
+# Ignore Python .pyc files
+*.pyc
+
+# Ignore VIM .swp files
+.*.swp
+
+# Ignore SQLite .db files
+*.db
+
+# Ignore .DS_Store files from Mac users
+.DS_Store
