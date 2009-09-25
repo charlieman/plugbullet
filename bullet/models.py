@@ -1,6 +1,7 @@
 from django.db import models
 from datetime import datetime
 from calendar import monthrange
+from random import randint
 
 # Create your models here.
 
@@ -23,18 +24,31 @@ class EventManager(models.Manager):
                            start_date__gte=month_start,
                            end_date__lte=month_end).order_by('start_date')
 
-    def prob_random(self, limit=1, exclude=None):
+    def prob_random(self, limit=3, exclude=None):
         """Retrieves random events with probability based on
         date closeness (weight)"""
 
-        result = self.month_events()
+        result = self.month_events(so_far=True)
+
         if exclude:
             result = result.exclude(id=exclude.id)
 
-        month_start = datetime.now().replace(day=1)
+        _now = datetime.now()
 
-        for event in result:
-            weight = (event.start_date - month_start).days
+        weight = [(event.start_date - _now).days for event in result]
+        _min = min(weight)
+        _sum = sum(weight)
+
+        over = 0
+        n = randint(_min, _sum)
+
+        for i in sorted(weight):
+            over += i
+            if over > n:
+                return i
+                break
+
+        return result
 
 
 class Type(models.Model):
@@ -77,3 +91,7 @@ class Event(models.Model):
 
     def __unicode__(self):
         return self.name
+
+def weight_logic(event, time):
+    days = (event.start_date - time).days
+    return days
