@@ -6,48 +6,55 @@ from random import randint
 # Create your models here.
 
 
-class EventManager(models.Manager):
+class BulletManager(models.Manager):
 
-    def month_events(self, year=None, month=None, so_far=False):
-        """Retrieves events for given month"""
+    def month_events(self, year=None, month=None, from_now=None):
+        """Retrieves events for given month
+        set from_now=True for retrieving this months events from now
+        until the end of the month"""
         _now = datetime.now()
 
         year = year or _now.year
         month = month or _now.month
 
-        month_start = datetime(year, month, day=1)
+        month_start = _now if from_now else datetime(year, month, day=1)
 
-        month_end = _now if so_far else datetime(year, month,
-                                            day=monthrange(year, month)[1])
+        month_end = datetime(year, month, day=monthrange(year, month)[1])
 
         return self.filter(active=True,
                            start_date__gte=month_start,
                            end_date__lte=month_end).order_by('start_date')
 
-    def prob_random(self, limit=3, exclude=None):
-        """Retrieves random events with probability based on
+    def comming_soon(self, exclude=None):
+        """Retrieves a random event with probability based on
         date closeness (weight)"""
-
-        result = self.month_events(so_far=True)
+        # TODO: return several events based on a limit parameter
+        result = self.month_events(from_now=True)
 
         if exclude:
             result = result.exclude(id=exclude.id)
 
         _now = datetime.now()
 
-        weight = [(event.start_date - _now).days for event in result]
+        weight = [( 31 - (event.start_date if event.start_date > _now else event.end_date) - _now).days for event in result]
         _min = min(weight)
         _sum = sum(weight)
 
-        over = 0
+        # maybe should use izip for optimization?
+        # from itertools import izip
+        _data = zip(weight, result)
+        _data.sort()
+
+        overweight = 0
         n = randint(_min, _sum)
 
-        for i in sorted(weight):
-            over += i
-            if over > n:
-                return i
-                break
+        for w, e in _data:
+            overweight += w
+            if overweight >= n - 1:
+                return e
+                break # is this necessary?
 
+        # it should never get here
         return result
 
 
@@ -59,7 +66,7 @@ class Type(models.Model):
         return self.name
 
 
-class Event(models.Model):
+class Bullet(models.Model):
     name = models.CharField(max_length=128)
     url = models.URLField()
     start_date = models.DateTimeField()
@@ -89,9 +96,8 @@ class Event(models.Model):
     contact_email = models.EmailField()
     contact_phone = models.CharField(max_length=20)
 
+    objects = BulletManager()
+
     def __unicode__(self):
         return self.name
 
-def weight_logic(event, time):
-    days = (event.start_date - time).days
-    return days

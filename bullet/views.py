@@ -3,7 +3,23 @@
 from django.views.generic.simple import direct_to_template
 from models import Bullet
 
+def index():
+    pass
 
+def register():
+    pass
+
+def show_event():
+    pass
+
+def list(year, day):
+    pass
+
+def calendar(year, day):
+    pass
+
+def widget():
+    pass
 
 # helper functions
 

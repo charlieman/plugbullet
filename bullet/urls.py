@@ -1,10 +1,10 @@
 from django.conf.urls.defaults import *
 
-urlpatterns = patterns('',
-    (r'^bullet/registrar/$', registrar),
-    (r'^bullet/evento/(.*)/$', evento_unico),
-    (r'^bullet/lista/(.*)/$', lista),
-    (r'^bullet/calendario/(\d{4})/(\d{2})/$', calendario),
-    (r'^bullet/widget/$', widget),
-    (r'^bullet/$', registrar),
+urlpatterns = patterns('bullet.views',
+    #(r'^bullet/$', 'index'  ),
+    (r'^bullet/registrar/$', 'register'),
+    (r'^bullet/evento/(.*)/$', 'show_event'),
+    (r'^bullet/lista/(\d{4})/(\d{2})/$', 'list'),
+    (r'^bullet/calendario/(\d{4})/(\d{2})/$', 'calendar'),
+    (r'^bullet/widget/$', 'widget'),
 )
