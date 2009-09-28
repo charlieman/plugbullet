@@ -1,6 +1,5 @@
 from django.db import models
 from datetime import datetime
-from calendar import monthrange
 from random import randint
 
 from django.utils.translation import ugettext_lazy as _
@@ -28,8 +27,8 @@ class BulletManager(models.Manager):
             last_day = first_day.replace(month=first_day.month + 1)
 
         return self.filter(active=True,
-                           start_date__gte=month_start,
-                           end_date__lt=month_end).order_by('start_date')
+                           start_date__gte=first_day,
+                           end_date__lt=last_day).order_by('start_date')
 
     def comming_soon(self, exclude=None):
         """Retrieves a random event with probability based on
@@ -44,11 +43,13 @@ class BulletManager(models.Manager):
 
         _now = datetime.now()
 
-        # This will give you a number -a weight- based on the distance of the day from now
-        # if today is 10 and the event starts 15 then it's weight is 31 - (15 - 10) = 26
-        # if today is 15 and the event started 13 and ends 17 then weight is 31 - (17 - 15) = 29
-        # if today is 2 and the event starts 20 then weight = 31 - (20 - 2) = 13
-        # TODO: give even more weight to events happening now, in the next 2 days and next 7 days
+        # This will give you a number -a weight- based on the distance
+        # of the day from now.
+        # if today is 10 and it starts 15 then weight = 31 - (15 - 10) = 26
+        # if today is 15 and it started 13 and ends 17 then
+        # weight = 31 - (17 - 15) = 29
+        # if today is 2 and it starts 20 then weight = 31 - (20 - 2) = 13
+        # TODO: give even more weight to events happening right now, in the next 2 days and next 7 days
         weight = [(31 - (event.start_date if event.start_date > _now else event.end_date) - _now).days for event in result]
         _min = min(weight)
         _sum = sum(weight)
@@ -65,7 +66,6 @@ class BulletManager(models.Manager):
             overweight += _weight
             if overweight >= n - 1:
                 return _event
-                break # is this necessary?
 
         # it should never get here
         return result
@@ -117,14 +117,9 @@ class Bullet(models.Model):
 
     # For now each event is of one type, maybe a ManyToMany should be used
     type = models.ForeignKey(Type)
-
     address = models.ForeignKey(Address)
-
     organization = models.ForeignKey(Organization)
-
-    # this should use contrib.auth User...
     contact = models.ForeignKey(User, related_name="contact", editable=False)
-
     objects = BulletManager()
 
     def __unicode__(self):
