@@ -1,10 +1,17 @@
 from django.conf.urls.defaults import *
+from django.views.generic.date_based import archive_month
 
 urlpatterns = patterns('bullet.views',
     #(r'^bullet/$', 'index'  ),
-    (r'^bullet/registrar/$', 'register'),
-    (r'^bullet/evento/(.*)/$', 'show_event'),
-    (r'^bullet/lista/(\d{4})/(\d{2})/$', 'list'),
-    (r'^bullet/calendario/(\d{4})/(\d{2})/$', 'calendar'),
-    (r'^bullet/widget/$', 'widget'),
+    (r'^registrar/$', 'register'),
+    (r'^evento/(.*)/$', 'show_event'),
+    url(r'^list/(?P<year>\d{4})/(?P<month>[a-z]{3})/$',
+        archive_month,
+        {'template': 'bullet/list.html', date_field='start_date'},
+        'bullet-list'),
+    url(r'^calendar/(?P<year>\d{4})/(?P<month>\w{3})/$',
+        archive_month, 
+        {'template': 'bullet/calendar.html'},
+        'bullet-calendar'),
+    (r'^widget/$', 'widget'),
 )
