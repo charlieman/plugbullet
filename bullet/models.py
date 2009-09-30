@@ -6,7 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from django.db.models import Q
 
-import bullet.constants
+import bullet.constants as constants
 
 
 class BulletManager(models.Manager):
@@ -116,11 +116,11 @@ class Bullet(models.Model):
     created_at = models.DateTimeField(auto_now_add = True)
     edited_at = models.DateTimeField(auto_now = True)
 
-    status = models.PositiveIntegerField(choices = constants.STATUS_CHOICES)
+    status = models.PositiveIntegerField(choices=constants.STATUS_CHOICES)
 
     # For now each event is of one type, maybe a ManyToMany should be used
-    type = models.ForeignKey(Type)
-    address = models.ForeignKey(Address)
+    type = models.OneToOneField(Type)
+    address = models.OneToOneField(Address)
     organization = models.ForeignKey(Organization)
     contact = models.ForeignKey(User, related_name="contact", editable=False)
     objects = BulletManager()
