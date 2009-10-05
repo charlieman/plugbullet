@@ -1,16 +1,16 @@
 #-*- coding: utf-8 -*-
 from django.utils.translation import ugettext as _
 
-STATUS_SENT     = 0
-STATUS_EVAL     = 1
-STATUS_ACCEPTED = 2
-STATUS_OBSERVED = 3
-STATUS_REJECTED = 4
+SUBMISSION_STATUS_PROPOSED = 0
+SUBMISSION_STATUS_EVAL     = 1
+SUBMISSION_STATUS_ACCEPTED = 2
+SUBMISSION_STATUS_OBSERVED = 3
+SUBMISSION_STATUS_REJECTED = 4
 
-STATUS_CHOICES = (
-    (STATUS_SENT,     _(u'Enviado')),
-    (STATUS_EVAL,     _(u'Evaluación')),
-    (STATUS_ACCEPTED, _(u'Aceptado')),
-    (STATUS_OBSERVED, _(u'Observado')),
-    (STATUS_REJECTED, _(u'Rechazado')),
+SUBMISSION_STATUS_CHOICES = (
+    (SUBMISSION_STATUS_PROPOSED, _(u'Proposed')),
+    (SUBMISSION_STATUS_EVAL,     _(u'In evaluation')),
+    (SUBMISSION_STATUS_ACCEPTED, _(u'Accepted')),
+    (SUBMISSION_STATUS_OBSERVED, _(u'Observed')),
+    (SUBMISSION_STATUS_REJECTED, _(u'Rejected')),
 )
