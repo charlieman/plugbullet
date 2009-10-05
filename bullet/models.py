@@ -51,7 +51,7 @@ class EmailChannel(models.Model):
 class TwitterChannel(models.Model):
     access_token_key = models.CharField(max_length=256, blank=True)
     access_token_secret = models.CharField(max_length=256, blank=True)
-    
+
     class Meta:
         verbose_name = _('twitter channel')
         verbose_name_plural = _('twitter channels')
@@ -142,8 +142,8 @@ class EventManager(models.Manager):
         else:
             last_day = first_day.replace(month=first_day.month + 1)
 
-        return self.filter(Q(start_date__gte=first_day) | \
-                Q(end_date__lt=last_day), active=True).order_by('start_date')
+        return self.filter(Q(start_ts__gte=first_day) | \
+                Q(end_ts__lt=last_day), active=True).order_by('start_date')
 
     def comming_soon(self, exclude=None):
         """Retrieves a random event with probability based on
