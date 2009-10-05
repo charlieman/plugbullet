@@ -3,6 +3,11 @@
 from os.path import dirname
 PROJECT_DIR = dirname(__file__)
 
+# I might need this 
+# check django.core.files.storage.get_storage_class
+# DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+
+# From here on non-custom stuff:
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -74,6 +79,7 @@ TEMPLATE_DIRS = (
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
     '%s/templates/' % PROJECT_DIR,
+    '%s/bullet/templates/' % PROJECT_DIR,
 )
 
 INSTALLED_APPS = (
