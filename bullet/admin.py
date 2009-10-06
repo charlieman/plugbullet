@@ -1,5 +1,5 @@
 from django.contrib import admin
-from bullet.models import Bullet, Address, Organization, Type
+from bullet.models import *
 
 
 class AddressInline(admin.StackedInline):
@@ -13,8 +13,11 @@ class BulletAdmin(admin.ModelAdmin):
     ordering = ('-start_date',)
     #inlines = [AddressInline]
 
-admin.site.register(Bullet, BulletAdmin)
 admin.site.register(Address)
 admin.site.register(Organization)
-admin.site.register(Type)
+admin.site.register(EmailChannel)
+admin.site.register(TwitterChannel)
+admin.site.register(Bulletin)
+admin.site.register(BulletinEdition)
+admin.site.register(Event)
 
