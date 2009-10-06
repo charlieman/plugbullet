@@ -8,6 +8,8 @@ from django.db.models import Q
 
 import bullet.constants as constants
 
+class Bullet(models.Model):
+    pass
 
 class Address(models.Model):
     # 3 letter codes for locations
@@ -36,6 +38,7 @@ class Organization(models.Model):
     def __unicode__(self):
         return self.name
 
+
 class EmailChannel(models.Model):
     sender_email = models.EmailField(max_length = 128)
     sender_name = models.CharField(max_length = 128)
@@ -46,7 +49,7 @@ class EmailChannel(models.Model):
         verbose_name_plural = _('email channels')
 
     def __unicode__(self):
-        return self.name
+        return '%s <%s>' % (self.sender_name, self.sender_email)
 
 class TwitterChannel(models.Model):
     access_token_key = models.CharField(max_length=256, blank=True)
@@ -60,17 +63,17 @@ class TwitterChannel(models.Model):
         return self.name
 
 class Bulletin(models.Model):
-    name = models.CharField(max_length = 128)
-    slug = models.SlugField(max_length = 128)
+    name = models.CharField(max_length=128)
+    slug = models.SlugField(max_length=128)
     description = models.TextField()
-    email_channels = models.ManyToManyField(EmailChannel, null=True)
+    email_channels = models.ManyToManyField(EmailChannel, null=True, blank=True)
     email_enabled = models.BooleanField(default=True)
-    twitter_channels = models.ManyToManyField(TwitterChannel, null=True)
+    twitter_channels = models.ManyToManyField(TwitterChannel, null=True, blank=True)
     twitter_enabled = models.BooleanField(default=True)
-    created_by = models.ForeignKey(User, related_name="submissions", editable=False)
+    created_by = models.ForeignKey(User, related_name="related_user") #, editable=False)
     organization = models.ForeignKey(Organization)
-    created_at = models.DateTimeField(auto_now_add = True)
-    edited_at = models.DateTimeField(auto_now = True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    edited_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = _('bulletin')
@@ -78,6 +81,10 @@ class Bulletin(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    def save(self, force_insert=False, force_update=False):
+        #self.submissions_related = #username
+        super(Bulletin, self).save(force_insert, force_update) # Call the "real" save() method.
 
 class BulletinEdition(models.Model):
     name = models.CharField(max_length = 128)
@@ -92,8 +99,8 @@ class BulletinEdition(models.Model):
     submission_period_end = models.DateTimeField()
     created_by = models.ForeignKey(User, related_name="submissions", editable=False)
     organization = models.ForeignKey(Organization)
-    created_at = models.DateTimeField(auto_now_add = True)
-    edited_at = models.DateTimeField(auto_now = True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    edited_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = _('bulletin')
@@ -102,16 +109,20 @@ class BulletinEdition(models.Model):
     def __unicode__(self):
         return self.name
 
+
+class SubmissionManager(models.Manager):
+    pass
+
 class Submission(models.Model):
     title = models.CharField(max_length = 128)
     body = models.TextField()
     url = models.URLField()
-    submitted_by = models.ForeignKey(User, related_name="submissions", editable=False)
+    submitted_by = models.ForeignKey(User, related_name="%(class)s_related", editable=False)
     organization = models.ForeignKey(Organization)
     status = models.PositiveIntegerField(choices=constants.SUBMISSION_STATUS_CHOICES)
     editions = models.ManyToManyField(BulletinEdition)
-    created_at = models.DateTimeField(auto_now_add = True)
-    edited_at = models.DateTimeField(auto_now = True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    edited_at = models.DateTimeField(auto_now=True)
 
     # Custom manager
     objects = SubmissionManager()
@@ -122,7 +133,7 @@ class Submission(models.Model):
         abstract = True
 
     def __unicode__(self):
-        return self.name
+        return self.title
 
 class EventManager(models.Manager):
 
@@ -190,8 +201,8 @@ class EventManager(models.Manager):
 
 class Event(Submission):
 
-    start_ts = models.DatetimeField()
-    end_ts = models.DatetimeField()
+    start_ts = models.DateTimeField()
+    end_ts = models.DateTimeField()
     paid = models.BooleanField(default=False)
     participation_info = models.TextField(blank=True, null=True)
 
@@ -201,7 +212,7 @@ class Event(Submission):
     class Meta:
         verbose_name = _('event')
         verbose_name_plural = _('events')
-        abstract = True
+        #abstract = True
 
     def __unicode__(self):
-        return self.name
+        return self.title
