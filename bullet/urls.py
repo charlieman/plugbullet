@@ -16,5 +16,6 @@ urlpatterns = patterns('bullet.views',
         {'template': 'bullet/calendar.html'},
         name='bullet-calendar'),
 
-    (r'^widget/$', 'widget'),
+    (r'^data.js$', 'widget'),
+    (r'^noscript/$', 'noscript'),
 )
