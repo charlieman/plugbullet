@@ -29,7 +29,7 @@ class Address(models.Model):
 
 class Organization(models.Model):
     name = models.CharField(max_length=128)
-    url = models.URLField()
+    url = models.URLField(verify_exists=False)
 
     class Meta:
         verbose_name = _('organization')
@@ -97,7 +97,7 @@ class BulletinEdition(models.Model):
     period_end = models.DateTimeField()
     submission_period_start = models.DateTimeField()
     submission_period_end = models.DateTimeField()
-    created_by = models.ForeignKey(User, related_name="submissions", editable=False)
+    created_by = models.ForeignKey(User, related_name="submissions")#, editable=False)
     organization = models.ForeignKey(Organization)
     created_at = models.DateTimeField(auto_now_add=True)
     edited_at = models.DateTimeField(auto_now=True)
@@ -116,8 +116,8 @@ class SubmissionManager(models.Manager):
 class Submission(models.Model):
     title = models.CharField(max_length = 128)
     body = models.TextField()
-    url = models.URLField()
-    submitted_by = models.ForeignKey(User, related_name="%(class)s_related", editable=False)
+    url = models.URLField(verify_exists=False)
+    submitted_by = models.ForeignKey(User, related_name="%(class)s_related")#, editable=False)
     organization = models.ForeignKey(Organization)
     status = models.PositiveIntegerField(choices=constants.SUBMISSION_STATUS_CHOICES)
     editions = models.ManyToManyField(BulletinEdition)
@@ -137,16 +137,16 @@ class Submission(models.Model):
 
 class EventManager(models.Manager):
 
-    def month_events(self, year=None, month=None, from_now=None):
+    def month_events(self, year=None, month=None, from_today=None):
         """Retrieves events for given month
-        set from_now=True for retrieving this months events from now
+        set from_today=True for retrieving this months events from today
         until the end of the month"""
-        _now = datetime.now()
+        today = datetime.now().replace(hour=0, minute=0)
 
-        year = year or _now.year
-        month = month or _now.month
+        year = year or today.year
+        month = month or today.month
 
-        first_day = _now if from_now else _now.replace(day=1)
+        first_day = today if from_today else today.replace(day=1)
 
         if first_day.month == 12:
             last_day = first_day.replace(year=first_day.year + 1, month=1)
@@ -154,50 +154,57 @@ class EventManager(models.Manager):
             last_day = first_day.replace(month=first_day.month + 1)
 
         return self.filter(Q(start_ts__gte=first_day) | \
-                Q(end_ts__lt=last_day), active=True).order_by('start_date')
+                Q(end_ts__lt=last_day), status=constants.SUBMISSION_STATUS_ACCEPTED).order_by('start_ts')
 
     def comming_soon(self, exclude=None):
         """Retrieves a random event with probability based on
         date closeness (weight)"""
         # TODO: return several events based on a limit parameter
 
-        # only show events since this moment
-        result = self.month_events(from_now=True)
+        # only show events since today
+        events = self.month_events(from_today=True)
 
         if exclude:
-            result = result.exclude(id=exclude.id)
+            events = events.exclude(id=exclude.id)
 
-        _now = datetime.now()
+        today = datetime.now().replace(hour=0, minute=0)
 
         # This will give you a number -a weight- based on the distance
-        # of the day from now.
+        # of the day from today.
         # if today is 10 and it starts 15 then weight = 31 - (15 - 10) = 26
         # if today is 15 and it started 13 and ends 17 then
         # weight = 31 - (17 - 15) = 29
         # if today is 2 and it starts 20 then weight = 31 - (20 - 2) = 13
-        # TODO: give even more weight to events happening right now,
+        # TODO: give even more weight to events happening right today,
         #       in the next 2 days and next 7 days
-        weight = [(31 - (ev.start_date \
-                  if ev.start_date > _now else ev.end_date) - _now).days \
-                  for ev in result]
-        _min = min(weight)
-        _sum = sum(weight)
+        weight = []
+        for event in events:
+            value = event.start_ts if event.start_ts > today else event.end_ts
+            value = (value - today).days
+            value -= 31
+            weight.append(value)
+            
+        #weight = [31 - ((ev.start_ts if ev.start_ts > today else ev.end_ts) - today).days for ev in result]
+        lowest = min(weight)
+        total = sum(weight)
 
         # maybe should use izip for optimization?
         # from itertools import izip
-        _data = zip(weight, result)
-        _data.sort()
+        data = zip(weight, events)
+        data.sort()
 
         overweight = 0
-        n = randint(_min, _sum)
+        n = randint(lowest, total)
 
-        for _weight, _event in _data:
-            overweight += _weight
+        result = None
+        for weight, event in data:
+            overweight += weight
             if overweight >= n - 1:
-                return _event
+                result = event
+                break
 
-        # it should never get here
         return result
+
 
 class Event(Submission):
 
