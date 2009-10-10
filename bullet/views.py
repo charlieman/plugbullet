@@ -1,7 +1,8 @@
 #-*- coding: utf-8 -*-
 # Create your views here.
+from django.http import HttpResponse
 from django.views.generic.simple import direct_to_template
-from models import Bullet
+from bullet import models
 
 def index():
     pass
@@ -18,8 +19,17 @@ def list(year, day):
 def calendar(year, day):
     pass
 
-def widget():
-    pass
+def widget(request):
+    from django.core import serializers
+    objects = models.Event.objects.comming_soon()
+    json = serializers.serialize('json', [objects], ensure_ascii=False)
+    json = 'printWidget(%s);' % json
+    return HttpResponse(json, mimetype='text/javascript')
+
+def noscript(request):
+    objects = models.Event.objects.comming_soon()
+    return direct_to_template(request, 'bullet/noscript.html',
+                              {'objects': [objects]})
 
 # helper functions
 
