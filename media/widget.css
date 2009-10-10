@@ -1,0 +1,12 @@
+.pb_widget h3 {
+    color:#999;
+}
+.pb_widget li {
+    list-style-type: none;
+    list-style-position: inside;
+}
+.pb_widget .more {
+    font-size:0.9em;
+    text-decoration:none;
+    text-align:right;
+}
