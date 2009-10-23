@@ -1,0 +1,26 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
+<html>
+    <head>
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+        <title>Plug - {% block title %}{% endblock %}</title>
+        <link rel="stylesheet" href="/media/base.css" type="text/css" media="screen" />
+        {% block external %}{% endblock %}
+    </head>
+    <body>
+        <h1 id="header">{% block head %}{% endblock %}</h1>
+        {% if user.username %}
+        <p class="salutation">Welcome {{ user.username }}, <a href="{% url logout %}">logout?</a></p>
+        {% else %}
+            <p class="salutation">Hi, please <a href="/login/">Login</a></p>
+        {% endif %}
+        <ul class="nav" id="main-nav">
+            <li><a href="/bullet/">events</a></li>
+            <li><a href="/bullet/create/">create event</a></li>
+        </ul>
+        {% block content %}{% endblock %}
+        <pre>{% filter force_escape %}
+
+        {% endfilter %}</pre>
+    </body>
+</html>
