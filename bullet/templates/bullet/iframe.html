@@ -1,0 +1,14 @@
+<html>
+    <head>
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+        <title>Eventos para {% now "F" %}</title>
+        <link href="/media/widget.css" rel="stylesheet" type="text/css" />
+    </head>
+    <body>
+       <div class="pb_widget">
+           <h3>Eventos en {% now "F" %}</h3>
+           {% include "bullet/hCalendar.html" %}
+       </div>
+<pre>{% filter force_escape %}{% debug %}{% endfilter %}</pre>
+    </body>
+</html>

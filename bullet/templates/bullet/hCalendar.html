@@ -1,0 +1,11 @@
+    <ul>
+        {% for event in events %}
+        <li class="vevent">
+        <a href="{{event.url}}" class="url">
+            <abbr class="dtstart" title="{{ event.start_ts|date:"Y-m-d\TG:i" }}">{{ event.start_ts|date:"b d \- h:ia" }}</abbr>
+            <span class="summary">{{ event.body }}</span>
+        </a>
+        </li>
+        {% endfor %}
+    </ul>
+    <a href='{% url bullet.views.event_list %}' class='more'>m&aacute;s eventos!</a>
