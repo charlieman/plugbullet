@@ -2,8 +2,8 @@ from django.conf.urls.defaults import *
 from django.views.generic.date_based import archive_month
 
 urlpatterns = patterns('bullet.views',
-    #(r'^bullet/$', 'index'  ),
-    (r'^registrar/$', 'register'),
+    (r'^$', 'event_list'),
+    (r'^create/$', 'create'),
     (r'^evento/(.*)/$', 'show_event'),
 
     url(r'^list/(?P<year>\d{4})/(?P<month>[a-z]{3})/$',
@@ -16,6 +16,7 @@ urlpatterns = patterns('bullet.views',
         {'template': 'bullet/calendar.html'},
         name='bullet-calendar'),
 
-    (r'^data.js$', 'widget'),
-    (r'^noscript/$', 'noscript'),
+    (r'^data.js$', 'direct_json'),
+    (r'^iframe/$', 'widget', {'template':'bullet/iframe.html'}),
+    (r'^ajax/$', 'widget', {'template':'bullet/ajax.html'}),
 )
