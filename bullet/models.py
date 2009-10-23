@@ -146,15 +146,20 @@ class EventManager(models.Manager):
         year = year or today.year
         month = month or today.month
 
-        first_day = today if from_today else today.replace(day=1)
+        if from_today:
+            first_day = today
+        else:
+            first_day = today.replace(day=1)
 
         if first_day.month == 12:
             last_day = first_day.replace(year=first_day.year + 1, month=1)
         else:
             last_day = first_day.replace(month=first_day.month + 1)
 
-        return self.filter(Q(start_ts__gte=first_day) | \
-                Q(end_ts__lt=last_day), status=constants.SUBMISSION_STATUS_ACCEPTED).order_by('start_ts')
+        return self.filter(
+                    Q(start_ts__gte=first_day) | Q(end_ts__lt=last_day),
+                    status=constants.SUBMISSION_STATUS_ACCEPTED
+                ).order_by('start_ts')
 
     def comming_soon(self, exclude=None):
         """Retrieves a random event with probability based on
@@ -179,9 +184,13 @@ class EventManager(models.Manager):
         #       in the next 2 days and next 7 days
         weight = []
         for event in events:
-            value = event.start_ts if event.start_ts > today else event.end_ts
+            if event.start_ts > today:
+                value = event.start_ts
+            else:
+                value = event.end_ts
+            #value = event.start_ts if event.start_ts > today else event.end_ts
             value = (value - today).days
-            value -= 31
+            value = 31 - value
             weight.append(value)
             
         #weight = [31 - ((ev.start_ts if ev.start_ts > today else ev.end_ts) - today).days for ev in result]
