@@ -65,6 +65,12 @@ TEMPLATE_LOADERS = (
 #     'django.template.loaders.eggs.load_template_source',
 )
 
+TEMPLATE_CONTEXT_PROCESSORS = (
+    "django.core.context_processors.auth",
+    "django.core.context_processors.debug",
+    "django.core.context_processors.i18n"
+)
+
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -80,6 +86,7 @@ TEMPLATE_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
     '%s/templates/' % PROJECT_DIR,
     '%s/bullet/templates/' % PROJECT_DIR,
+    '%s/main_site/templates/' % PROJECT_DIR,
 )
 
 INSTALLED_APPS = (
@@ -89,5 +96,14 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     #'django.contrib.sites',
+    'plugbullet.main_site',
     'plugbullet.bullet',
+)
+
+INTERNAL_IPS = (
+    '127.0.0.1',
+)
+
+AUTHENTICATION_BACKENDS = (
+    'main_site.authbackends.EmailOrUsernameBackend',
 )
