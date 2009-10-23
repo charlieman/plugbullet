@@ -1,5 +1,7 @@
 from django.conf.urls.defaults import *
 from django.conf import settings
+from django.views.generic.simple import redirect_to
+from plugbullet.main_site.views import main_page
 
 
 # Uncomment the next two lines to enable the admin:
@@ -7,7 +9,6 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    #(r'^$', 'plugbullet.views.index'),
     #(r'^hello/$', 'views.hello'),
     (r'^bullet/', include('plugbullet.bullet.urls')),
 
@@ -17,6 +18,11 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     (r'^admin/', include(admin.site.urls)),
+
+    #(r'.*', include('plugbullet.main_site.urls')),
+    #(r'^$', main_page),
+    #(r'^$', redirect_to, {'url': '/main/'}),
+    #(r'^main/', include('plugbullet.main_site.urls')),
 )
 
 if settings.DEBUG:
@@ -25,3 +31,7 @@ if settings.DEBUG:
             'django.views.static.serve',
             {'document_root': settings.MEDIA_ROOT}),
     )
+
+urlpatterns += patterns('',
+    (r'^', include('plugbullet.main_site.urls')),
+)
