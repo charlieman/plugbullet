@@ -1,0 +1,40 @@
+body {
+    background: #f3f4e8;
+    margin:0;
+    padding:0;
+}
+#header {
+    color: #fff;
+    background:goldenRod;
+    border-bottom:gold 10px solid;
+    margin:0;
+    padding: 10px;
+}
+.salutation {
+    float:right;
+    display: block;
+    padding: 0 10px 0 0;
+    font-size: 80%;
+    font-family: sans-serif;
+}
+
+#main-nav {
+    margin:10px 0;
+    padding:0;
+}
+#main-nav li {
+    display: inline;
+    list-style: none;
+    margin: 0 5px;
+}
+#main-nav a {
+    border-bottom:1px solid gold;
+    padding: 3px 5px;
+    background: goldenRod;
+    color: #fff;
+    text-decoration: none;
+    margin: 0;
+}
+#main-nav a:hover {
+    background: red;
+}
