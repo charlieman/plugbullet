@@ -1,7 +1,8 @@
 from django.contrib.auth.backends import ModelBackend
 from django.contrib.auth.models import User
 
-class EmailOrUsernameBackend(ModelBackend):
+class EmailBackend(ModelBackend):
+    "Authenticate with email and password"
     def authenticate(self, username=None, password=None):
 #         if '@' in username:
 #             kwargs = {'email': username}

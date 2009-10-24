@@ -105,5 +105,6 @@ INTERNAL_IPS = (
 )
 
 AUTHENTICATION_BACKENDS = (
-    'main_site.authbackends.EmailOrUsernameBackend',
+    'django.contrib.auth.backends.ModelBackend',
+    'main_site.authbackends.EmailBackend',
 )
