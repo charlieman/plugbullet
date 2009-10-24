@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% trans 'User Registration' %}{% endblock %}
+{% block content %}
+<form action="." method="post">
+    {{ form.as_ul }}
+    <p><input type="submit" value="{% trans 'Register' %}" /></p>
+</form>
+{% endblock %}
