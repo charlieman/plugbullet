@@ -15,6 +15,8 @@ def logout_page(request):
     return HttpResponseRedirect('/')
 
 def register_page(request):
+    if request.user.is_authenticated():
+        return HttpResponseRedirect('/')
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
