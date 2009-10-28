@@ -9,7 +9,7 @@
         {% block external %}{% endblock %}
     </head>
     <body>
-        <h1 id="header">{% block head %}{% endblock %}</h1>
+        <h1 id="header">PLUG - {% block head %}{% endblock %}</h1>
         {% if user.username %}
         <p class="salutation">Welcome {{ user.username }}, <a href="{% url logout %}">logout?</a></p>
         {% else %}
